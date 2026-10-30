@@ -1,0 +1,1 @@
+{"name":"CampusRide Driver","short_name":"My Ride","start_url":"/driver","scope":"/driver","display":"standalone","theme_color":"#111111","background_color":"#ffffff","icons":[{"src":"/assets/icon.svg","type":"image/svg+xml","sizes":"any","purpose":"any maskable"}]}

@@ -1,0 +1,9 @@
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30,<1
+argon2-cffi>=23,<26
+qrcode>=8,<9
+tzdata>=2025.2
+psycopg[binary]>=3.2,<4
+# Real-data-only forecasting dependencies (used only if sufficient actual history exists)
+scikit-learn>=1.5,<2
+numpy>=2,<3
