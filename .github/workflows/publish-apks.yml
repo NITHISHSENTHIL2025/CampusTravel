@@ -1,0 +1,41 @@
+name: Publish CampusRide APK download URLs
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-apks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    name: Release compiled Driver and Student APKs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the previously successful Android APK artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p release/driver release/student
+          gh run download 41119244985 --repo "$GITHUB_REPOSITORY" --name CampusRideDriver-debug-apk --dir release/driver
+          gh run download 41119244985 --repo "$GITHUB_REPOSITORY" --name CampusRideStudent-debug-apk --dir release/student
+          cp release/driver/*.apk release/CampusRideDriver.apk
+          cp release/student/*.apk release/CampusRideStudent.apk
+          unzip -t release/CampusRideDriver.apk | tail -n 1
+          unzip -t release/CampusRideStudent.apk | tail -n 1
+          ls -lh release/*.apk
+
+      - name: Publish direct public APK download links
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="campusride-demo-apks-v1"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$tag" release/CampusRideDriver.apk release/CampusRideStudent.apk --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$tag" release/CampusRideDriver.apk release/CampusRideStudent.apk --repo "$GITHUB_REPOSITORY" --title "CampusRide Driver and Student Android demo APKs" --notes "Testing APKs compiled by GitHub Actions run 41119244985. Driver and Student connect to https://campustravel.onrender.com. Demo credentials are not included. Requires phone testing, not production-certified." --prerelease
+          fi
